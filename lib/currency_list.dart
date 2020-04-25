@@ -15,10 +15,12 @@ class CurrList extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.only(top: 12, bottom: 12),
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
+                    elevation: 2,
+                    margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                     child: ListTile(
                       title: Text(
                         snapshot.data[index].name,
@@ -49,12 +51,14 @@ class CurrList extends StatelessWidget {
 
       for (final name in data.keys) {
         final value = data[name];
-        //print('$name=$value');
+        double dValue = double.parse(value.toString());
+        //print('$name=$dValue');
 
-        Currency cur = new Currency(name.toString(), value.toString());
+        Currency cur =
+            new Currency(name.toString(), dValue.toStringAsFixed(2).toString());
 
         if (name.toString() == 'INR')
-          currList[0] = cur;
+          currList.insert(0, cur);
         else
           currList.add(cur);
       }
