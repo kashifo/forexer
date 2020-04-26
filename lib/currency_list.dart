@@ -19,16 +19,28 @@ class CurrList extends StatelessWidget {
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
-                    elevation: 2,
-                    margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                    child: ListTile(
-                      title: Text(
-                        snapshot.data[index].name,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(snapshot.data[index].value),
-                    ),
-                  );
+                      elevation: 2,
+                      margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                      child: Container(
+                        padding: EdgeInsets.all(16),
+                        child: Row(
+                          children: <Widget>[
+                            Text(
+                              snapshot.data[index].name,
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              snapshot.data[index].value,
+                              style: TextStyle(
+                                  fontSize: 14, color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                      ));
                 });
           } else {
             return Center(child: CircularProgressIndicator());
@@ -42,20 +54,18 @@ class CurrList extends StatelessWidget {
     final response = await http.get(urlForex);
 
     if (response.statusCode == 200) {
-      //String stringJson = response.body;
-      //print('stringJson=' + stringJson);
+      print('stringJson=' + response.body);
 
       final decoded = jsonDecode(response.body) as Map;
       final data = decoded['rates'] as Map;
       List<Currency> currList = new List();
 
       for (final name in data.keys) {
-        final value = data[name];
-        double dValue = double.parse(value.toString());
-        //print('$name=$dValue');
+        double value = double.parse(data[name].toString());
+        String finalValue = value.toStringAsFixed(2).toString();
+        print('$name=$finalValue($value)');
 
-        Currency cur =
-            new Currency(name.toString(), dValue.toStringAsFixed(2).toString());
+        Currency cur = new Currency(name.toString(), finalValue);
 
         if (name.toString() == 'INR')
           currList.insert(0, cur);
@@ -63,7 +73,7 @@ class CurrList extends StatelessWidget {
           currList.add(cur);
       }
 
-      print(currList.length.toString());
+      print('fetchCurrencies length=' + currList.length.toString());
       return currList;
     } else {
       throw Exception('Failed to fetch data.');
